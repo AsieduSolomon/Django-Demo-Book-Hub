@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 text-center mb-5">
+        <h1>Welcome to BookHub</h1>
+        <p class="lead">Discover, review, and organize your favorite books</p>
+        
+        {% if not user.is_authenticated %}
+            <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Join Our Community</a>
+        {% else %}
+            <a href="{% url 'add-book' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-plus"></i> Add a Book
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+{% if highly_rated_books %}
+<div class="row mb-5">
+    <div class="col-12">
+        <h2>Highly Rated Books</h2>
+        <div class="row">
+            {% for book in highly_rated_books %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+                    {% else %}
+                        <div class="card-img-top book-cover bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-book fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ book.title }}</h6>
+                        <p class="card-text text-muted small">{{ book.author.name }}</p>
+                        <div class="rating-stars">
+                            {% with avg_rating=book.average_rating %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= avg_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <small class="text-muted">({{ avg_rating }})</small>
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'book-detail' book.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if recent_books %}
+<div class="row">
+    <div class="col-12">
+        <h2>Recently Added</h2>
+        <div class="row">
+            {% for book in recent_books %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+                    {% else %}
+                        <div class="card-img-top book-cover bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-book fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ book.title }}</h6>
+                        <p class="card-text text-muted small">{{ book.author.name }}</p>
+                        <p class="card-text small">{{ book.publication_year }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'book-detail' book.pk %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
